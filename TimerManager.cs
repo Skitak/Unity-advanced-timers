@@ -1,27 +1,22 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public static class TimerManager {
+public class TimerManager : MonoBehaviour {
 	private static ArrayList timers = new ArrayList (); 
 	public static bool isPlaying = true; 
 
 
-    public static IEnumerator TimerUpdate()
-    {
-        while (Application.isPlaying)
-        {
-            foreach (Timer t in timers)
-            {
-                t.Update(Time.deltaTime);
-            }
-
-            yield return null;
-        }
+    private void Update() {
+        foreach (Timer t in timers)
+            t.Update(Time.deltaTime);
     }
 
-    public static void Init()
-    {
-        new GameObject("Timer Dummy").AddComponent<TimerDummy>().StartCoroutine(TimerUpdate());
+    public static void Init() {
+        if (GameObject.Find("Timer Manager") != null)
+            return; 
+        GameObject timerManager = new GameObject("Timer Manager");
+        timerManager.AddComponent<TimerManager>();
+        Object.DontDestroyOnLoad(timerManager);
     }
 
 	public static void SetupTimer(Timer t){
