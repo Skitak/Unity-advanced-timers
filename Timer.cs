@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using System;
 public class Timer {
 	private float time = 0f;
 	public float endTime;
@@ -151,7 +151,11 @@ public class Timer {
 		return EndTime - Time;
 	}
 
-
+  // C# time format : https://www.c-sharpcorner.com/blogs/date-and-time-format-in-c-sharp-programming1
+  public string GetFormattedTime(string format) {
+		TimeSpan time = TimeSpan.FromSeconds(Time);
+		return time.ToString(format);
+	}
 
 }
 
