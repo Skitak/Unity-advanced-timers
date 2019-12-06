@@ -107,7 +107,7 @@ public class Timer {
 	public float EndTime{
 		get { return endTime;}
 		set {
-			Reset ();
+			// Reset ();
 			endTime = value;
 		}
 	}
@@ -153,10 +153,17 @@ public class Timer {
 
   // C# time format : https://www.c-sharpcorner.com/blogs/date-and-time-format-in-c-sharp-programming1
   public string GetFormattedTime(string format) {
-		TimeSpan time = TimeSpan.FromSeconds(Time);
-		return time.ToString(format);
+		return FormatTime(Time, format);
 	}
 
+	public string GetFormattedTimeLeft (string format) {
+		return FormatTime(GetTimeLeft(), format);
+	}
+
+	private string FormatTime(float timeToFormat, string format) {
+    TimeSpan time = TimeSpan.FromSeconds(timeToFormat);
+    return time.ToString(format);
+	}
 }
 
 public enum TimerState {
