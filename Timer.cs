@@ -164,6 +164,20 @@ public class Timer {
     TimeSpan time = TimeSpan.FromSeconds(timeToFormat);
     return time.ToString(format);
 	}
+
+	// Starts a timer with "time" as endTime that's fired immediatly
+	// Will play the onTimerEnd function as expected
+	public static void OneShotTimer(float time, TimerFunction onTimerEnd){
+		Timer oneShotTimer = new Timer(time, onTimerEnd);
+		oneShotTimer.Play();
+	}
+
+	public static void RecurrentTimer(float time, TimerFunction onTimerEnd) {
+    Timer oneShotTimer = new Timer(time, onTimerEnd);
+		onTimerEnd += () => { oneShotTimer.ResetPlay(); };
+		oneShotTimer.Play();
+		
+	}
 }
 
 public enum TimerState {
