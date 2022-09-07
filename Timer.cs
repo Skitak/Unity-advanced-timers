@@ -8,7 +8,6 @@ public class Timer {
 	public event TimerFunction OnTimerEnd;
 	public event TimerFunction OnTimerUpdate;
 	private TimerState state = TimerState.PAUSED;
-	private bool isReversed = false;
 
 
 	/// <summary>
@@ -29,29 +28,6 @@ public class Timer {
 		OnTimerEnd += function;
 	}
 
-	/// <summary>
-	/// Crée un nouveau Timer
-	/// </summary>
-	/// <param name="endTime">Temps de fin du chrono</param>
-	/// <param name="isAlreadyFinished">Le timer doit-il être fini tout de suite?</param>
-	public Timer(float endTime, bool isAlreadyFinished) : this (endTime){
-		if (isAlreadyFinished) {
-			time = endTime;
-			state = TimerState.FINISHED;
-		}
-	}
-
-	/// <summary>
-	/// Crée un nouveau Timer
-	/// </summary>
-	/// <param name="endTime">Temps de fin du chrono</param>
-	/// <param name="function">Fonction déclanché à la fin du timer.</param>
-	/// <param name="isAlreadyFinished">Le timer doit-il être fini tout de suite?</param>
-	public Timer ( float endTime, TimerFunction function, bool isAlreadyFinished) : this (endTime, isAlreadyFinished){
-		OnTimerEnd += function;
-	}
-
-	
 	/// <summary>
 	/// Remet le timer à 0.
 	/// /!\ Reset() ne relance pas le timer!
@@ -85,42 +61,33 @@ public class Timer {
 	/// /!\ Cette méthode ne remet pas le timer à 0!
 	/// Pour cela, il y a la méthode Reset().
 	/// </summary>
-	public void Play () {
+	public Timer Play () {
 		state = TimerState.UPDATING;
-	}
+        return this;
+    }
 	/// <summary>
 	/// Reset et lance le timer
 	/// </summary>
 	public void ResetPlay(){
 		Reset ();
 		Play ();
-	}
+    }
 
 	public void Update(float delta){
 		if (state == TimerState.UPDATING ){
 			if (OnTimerUpdate != null)
 				OnTimerUpdate();
-			Time = isReversed ? Time - delta : Time + delta;
+			Time = Time + delta;
 		}
 	}
 
 	public float EndTime{
-		get { return endTime;}
-		set {
-			// Reset ();
-			endTime = value;
-		}
-	}
-
-	public bool IsReversed {
-		get{ return isReversed; }
-		set{ isReversed = value; }
+		get { return endTime; }
+		set { endTime = value; }
 	}
 
 	public float Time {
-		get {
-			return time;
-		}
+		get { return time; }
 		set {
 			if (state == TimerState.UPDATING) {
 				if (value >= endTime) {
@@ -161,23 +128,23 @@ public class Timer {
 	}
 
 	private string FormatTime(float timeToFormat, string format) {
-    TimeSpan time = TimeSpan.FromSeconds(timeToFormat);
-    return time.ToString(format);
+		TimeSpan time = TimeSpan.FromSeconds(timeToFormat);
+		return time.ToString(format);
 	}
 
 	// Starts a timer with "time" as endTime that's fired immediatly
 	// Will play the onTimerEnd function as expected
 	public static void OneShotTimer(float time, TimerFunction onTimerEnd){
 		Timer oneShotTimer = new Timer(time, onTimerEnd);
-		oneShotTimer.Play();
+        oneShotTimer.OnTimerEnd += () => TimerManager.RemoveTimer(oneShotTimer) ;
+        oneShotTimer.Play();
 	}
 
-	public static void RecurrentTimer(float time, TimerFunction onTimerEnd) {
-    Timer oneShotTimer = new Timer(time, onTimerEnd);
-		onTimerEnd += () => { oneShotTimer.ResetPlay(); };
-		oneShotTimer.Play();
-		
-	}
+	// public static void RecurrentTimer(float time, TimerFunction onTimerEnd) {
+    // Timer oneShotTimer = new Timer(time, onTimerEnd);
+	// 	onTimerEnd += () => { oneShotTimer.ResetPlay(); };
+	// 	oneShotTimer.Play();
+	// }
 }
 
 public enum TimerState {
