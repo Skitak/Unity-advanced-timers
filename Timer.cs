@@ -4,9 +4,7 @@ using System;
 public class Timer {
 	private float time = 0f;
 	public float endTime;
-	public delegate void TimerFunction () ;
-	public event TimerFunction OnTimerEnd;
-	public event TimerFunction OnTimerUpdate;
+	public event Action OnTimerEnd, OnTimerUpdate;
 	private TimerState state = TimerState.PAUSED;
 
 
@@ -24,7 +22,7 @@ public class Timer {
 	/// </summary>
 	/// <param name="endTime">Temps de fin du chrono</param>
 	/// <param name="function">Fonction déclanché à la fin du timer.</param>
-	public Timer (float endTime, TimerFunction function) : this (endTime){
+	public Timer (float endTime, Action function) : this (endTime){
 		OnTimerEnd += function;
 	}
 
@@ -134,7 +132,7 @@ public class Timer {
 
 	// Starts a timer with "time" as endTime that's fired immediatly
 	// Will play the onTimerEnd function as expected
-	public static void OneShotTimer(float time, TimerFunction onTimerEnd){
+	public static void OneShotTimer(float time, Action onTimerEnd){
 		Timer oneShotTimer = new Timer(time, onTimerEnd);
         oneShotTimer.OnTimerEnd += () => TimerManager.RemoveTimer(oneShotTimer) ;
         oneShotTimer.Play();
